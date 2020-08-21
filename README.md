@@ -12,7 +12,7 @@ O intuito deste projeto é praticar conhecimentos em C# e Angular, mas também p
 - Frontend Angular 8+
 - .NET Identity Core - Autenticar e Autorizar - (TOKEN - JWT)
 - Angular + .NET Identity Core + JWT
-- etc...
+- Dentre outras.
 
 Obs: pode acontecer de ter alguns bugs, ou algumas implementações poderiam ser melhor, caso você queria contribuir com o projeto sinta-se a vontade!
 Este projeto está liberado para uso de todos.
