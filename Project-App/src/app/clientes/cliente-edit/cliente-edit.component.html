@@ -1,0 +1,137 @@
+<app-titulo [titulo]="titulo"></app-titulo>
+<form [formGroup]="registerForm">
+  <div class="row">
+    <div class="col-md-12">
+      <tabset>
+        <tab heading="Cliente">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>Nome Completo</label>
+              <input type="text" class="form-control"
+                [ngClass]="{'is-invalid': registerForm.get('nomeCliente').errors && registerForm.get('nomeCliente').touched}"
+                formControlName="nomeCliente" placeholder="Insira o Nome Completo">
+              <div
+                *ngIf="registerForm.get('nomeCliente').hasError('required') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome é obrigatório.
+              </div>
+              <div
+                *ngIf="registerForm.get('nomeCliente').hasError('minlength') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome deve ter no mínimo 4 Caracters.
+              </div>
+              <div
+                *ngIf="registerForm.get('nomeCliente').hasError('maxlength') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome deve ter no máximo 50 Caracters.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Email</label>
+              <input type="text" class="form-control" formControlName="email"
+                [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}">
+              <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                class="invalid-feedback">>
+                O email é obrigatório.
+              </div>
+              <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                class="invalid-feedback">>
+                E-mail deve ser válido.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Telefone</label>
+              <input type="text" mask="(000) 0000-0000" class="form-control" [ngClass]="{'is-invalid': registerForm.get('numeroTelefone').errors
+              && registerForm.get('numeroTelefone').touched}" formControlName="numeroTelefone"
+                placeholder="(000) 90000-0000">
+              <div *ngIf="registerForm.get('numeroTelefone').hasError('required')
+              && registerForm.get('numeroTelefone').touched" class="invalid-feedback">
+                Telefone é obrigatório.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Tipo Cliente</label>
+              <select class="form-control" formControlName="tipoCliente" 
+                [ngClass]="{'is-invalid': obterTipoCliente() == -1 && registerForm.get('tipoCliente').touched}">
+                <option value="-1" selected>Selecione</option>
+                <option value="1">Fisica</option>
+                <option value="2">Jurídica</option>
+              </select>
+            </div>
+            <div class="form-group col-md-4" *ngIf="obterTipoCliente() == 1">
+              <label>CPF</label>
+              <input mask="000.000.000-00" class="form-control" placeholder="CPF" formControlName="cpf">
+            </div>
+            <div class="form-group col-md-4" *ngIf="obterTipoCliente() == 2">
+              <label>CNPJ</label>
+              <input  mask="00.000.000/0000-00" placeholder="CNPJ" class="form-control" formControlName="cnpj">
+            </div>
+          </div>
+        </tab>
+        <tab heading="Endereco">
+          <div>
+            <div formArrayName="endereco" *ngFor="let end of endereco.controls; let i=index">
+              <fieldset [formGroupName]="i" class="form-group">
+                <legend class="d-flex justify-content-between capitalize">
+                  {{ endereco.get(i+'.logradouro').value === '' ?
+                    'Endereços' :
+                    endereco.get(i+'.logradouro').value
+                  }}
+                  <button class="btn btn-sm btn-warning mb-1" (click)="removerCliente(i)">remove</button>
+                </legend>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label>Logradouro</label>
+                    <input type="text" class="form-control"
+                      [ngClass]="{'is-invalid': endereco.get(i+'.logradouro').errors && endereco.get(i+'.logradouro').touched}"
+                      formControlName="logradouro" placeholder="Endereco">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Bairro</label>
+                    <input type="text" class="form-control"
+                      [ngClass]="{'is-invalid': endereco.get(i+'.bairro').errors && endereco.get(i+'.bairro').touched}"
+                      formControlName="bairro" placeholder="Bairro">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>CEP</label>
+                    <input type="text" class="form-control" mask="00000000"
+                      [ngClass]="{'is-invalid': endereco.get(i+'.cep').errors && endereco.get(i+'.cep').touched}"
+                      formControlName="cep" placeholder="EX:89128-000">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Cidade</label>
+                    <input type="text" class="form-control"
+                      [ngClass]="{'is-invalid': endereco.get(i+'.cidade').errors && endereco.get(i+'.cidade').touched}"
+                      formControlName="cidade" placeholder="Blumenau">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Tipo Endereço</label>
+                    <select required class="form-control"
+                      [ngClass]="{'is-invalid': endereco.get(i+'.tipoEndereco').errors && endereco.get(i+'.tipoEndereco').touched}"
+                      formControlName="tipoEndereco">
+                      <option value="">Selecione a Opção</option>
+                      <option value="1">Residencial</option>
+                      <option value="2">Comercial</option>
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <button (click)="adicionarCliente()" class="btn btn-outline-primary">
+              Adicionar Endereço
+            </button>
+          </div>
+        </tab>
+      </tabset>
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-end">
+          <!-- {{registerForm.value | json}} -->
+          <button [disabled]="!registerForm.valid" class="btn btn-success my-2" (click)="salvarCliente()">Salvar
+            Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

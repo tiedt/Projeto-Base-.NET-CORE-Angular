@@ -1,0 +1,146 @@
+<br>
+<app-titulo [titulo]="titulo"></app-titulo>
+<div class="d-flex">
+  <div class="form-inline mr-auto">
+    <div class="form-group mb-2">
+      <label class="mr-2">Filtro:</label> <input type="text" class="form-control mr-2" placeholder="buscar"
+        [(ngModel)]="filtroLista">
+    </div>
+  </div>
+  <div>
+    <button class="btn bt-outline-primary" (click)="novoCliente(template)">Novo Cliente>
+      <i class="fa fa-plus-circle"></i>&nbsp;
+    </button>
+  </div>
+</div>
+<h3>Filtro: {{filtroLista}}</h3>
+<table class="table table-striped">
+  <thead class="thead-light">
+    <tr>
+      <th>Nome do Cliente</th>
+      <th>Email</th>
+      <th>Telefone</th>
+      <th colspan="2">Opções</th>
+    </tr>
+  </thead>
+  <tbody *ngIf="clientes && clientes.length">
+    <tr *ngFor="let cliente of clientesFiltrados">
+      <td>{{cliente.nomeCliente}}</td>
+      <td>{{cliente.email}}</td>
+      <td>{{cliente.numeroTelefone}}</td>
+      <td>
+        <div class="btn-group">
+          <button class="btn btn-sm btn-success" (click)="editarCliente(cliente,template)" tooltip="Editar">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="excluirCliente(cliente,confirm)" tooltip="Excluir">
+            <i class="fa fa-eraser"></i>
+          </button>
+        </div>
+        <a [routerLink]="['/cliente',cliente.clienteId,'edit']" tooltip="Edição Detalhada" class="btn btn-sm btn-warning">
+          <i class="fa fa-edit"></i>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot *ngIf="!clientes">
+    <tr colspan="7" class="text-center">
+      <h4>
+        Nenhum cliente encontrado
+      </h4>
+    </tr>
+  </tfoot>
+</table>
+
+<div bsModal #template="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name1" class="modal-title pull-left">Cadastro Resumido</h4>
+        <button type="button" class="close pull-right" (click)="template.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="registerForm">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>Nome Completo</label>
+              <input type="text" class="form-control"
+                [ngClass]="{'is-invalid': registerForm.get('nomeCliente').errors && registerForm.get('nomeCliente').touched}"
+                formControlName="nomeCliente" placeholder="Insira o Nome Completo">
+              <div *ngIf="registerForm.get('nomeCliente').hasError('required') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome é obrigatório.
+              </div>
+              <div *ngIf="registerForm.get('nomeCliente').hasError('minlength') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome deve ter no mínimo 4 Caracters.
+              </div>
+              <div *ngIf="registerForm.get('nomeCliente').hasError('maxlength') && registerForm.get('nomeCliente').touched"
+                class="invalid-feedback">
+                O Nome deve ter no máximo 50 Caracters.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Email</label>
+              <input type="text" class="form-control" formControlName="email"
+                [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}">
+              <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                class="invalid-feedback">>
+                O email é obrigatório.
+              </div>
+              <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                class="invalid-feedback">>
+                E-mail deve ser válido.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Telefone</label>
+              <input type="text" mask="(00) 0000-00000" class="form-control" [ngClass]="{'is-invalid': registerForm.get('numeroTelefone').errors
+            && registerForm.get('numeroTelefone').touched}" formControlName="numeroTelefone" placeholder="(00) 90000-0000">
+              <div *ngIf="registerForm.get('numeroTelefone').hasError('required')
+            && registerForm.get('numeroTelefone').touched" class="invalid-feedback">
+                Telefone é obrigatório.
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="template.hide()">
+          Fechar
+        </button>
+        <button class="btn btn-primary ml-auto" [disabled]="!registerForm.valid" (click)="salvarAlteracao(template)">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #confirm="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">
+          Deletando Cliente
+        </h4>
+        <button type="button" class="close pull-right" (click)="confirm.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{bodyDeletarCliente}}</p>
+      </div>
+      <div class="modal-footer btn-group d-flex">
+        <button type="button" class="btn btn-outline-primary" (click)="confirm.hide()">
+          CENCELAR
+        </button>
+        <button type="button" class="btn btn-outline-danger" (click)="confirmeDelete(confirm)">
+          DELETAR
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
